@@ -1,0 +1,28 @@
+!!! 5
+html
+  head
+    script(src = '/public/js/main.js')
+    link(rel = 'stylesheet', href = '/public/css/main.css')
+    title: block title
+  body
+    header.navbar.navbar-inverse.navbar-fixed-top(role = 'navigation')
+      .container
+        .navbar-header
+          a.navbar-brand(href = '/') Costa Sample App
+        ul.nav.navbar-nav
+          li: a(href = 'https://github.com/printercu/costa', target = '_blank') Costa
+          li: a(href = 'https://github.com/printercu/coffee_classkit', target = '_blank') Classkit
+    .container
+      .row
+        .col-xs-8.col-xs-offset-2
+          - each message, type in flash()
+            - if (type == 'error') type = 'danger'
+            .alert(class = 'alert-' + type)= message
+          block content
+    footer.container
+      .row
+        .col-xs-8.col-xs-offset-2
+          | 2014 &copy;&nbsp;
+          a(href = 'https://github.com/printercu', target = '_blank') printercu
+          | &nbsp;
+          <iframe src="http://nodeknockout.com/iframe/printercu" frameborder=0 scrolling=no allowtransparency=true width=115 height=25></iframe>

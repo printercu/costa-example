@@ -1,0 +1,13 @@
+extends ../layouts/application
+
+block title
+  = resource.title
+
+block content
+  h1: block title
+
+  .post!= resource.body
+
+  .comments
+    h4 Comments
+    p Comming soon...

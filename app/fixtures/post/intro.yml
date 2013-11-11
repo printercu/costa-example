@@ -1,0 +1,156 @@
+---
+id: 1
+title: Costa
+body_md: |
+  This site is a sample blog application built with [costa](https://github.com/printercu/costa).
+
+  Costa was made in the search of something Rails-like for node.js.
+  There are already several frameworks that call themselves "Rails-like".
+  But they do not give all the flexibility that Rails gives.
+
+  Costa uses modified inheritance model based on CoffeeScript's implementation,
+  that allows to write application in OO-way just like in Ruby using mixins,
+  concerns and DSL. However it respects Javascript way: it does not break into
+  global namespace
+
+  With costa it'll be possible to have something similar to
+  [InheritedResources](https://github.com/josevalim/inherited_resources).
+  One will be able to define controller with all CRUD methods just in few lines:
+
+  ```coffee
+  module.exports =
+  PostsController extends require './application_controller'
+    @extendsWithProto()
+    @inheritResources()
+  ```
+
+  And it'll do all the stuff: define CRUD methods using Post model,
+  perform rendering depending on requested format, handle errors & etc.
+  Also it'll be easy to redefine method or add some extra actions.
+
+  Here are model & controller used in this application.
+  Full repo is available @ [nko4/printercu](https://github.com/nko4/printercu).
+
+  ### Model
+
+  ```coffee
+  marked  = require 'marked'
+  hljs    = require 'highlight.js'
+  _       = require 'lodash'
+
+  module.exports =
+  class Post extends require './base_record'
+    @extendsWithProto()
+
+    @include require './concerns/with_fixtures'
+
+    @MARKED_OPTIONS =
+      highlight: (code, lang) ->
+        code = 'coffeescript' if code is 'coffee'
+        try
+          return hljs.highlight(lang, code).value
+        catch error
+          return hljs.highlightAuto(code).value
+
+    @exportAttrs 'body', 'body_md', 'title', 'created_at'
+
+    @validatesPresenceOf 'body_md', 'title'
+
+    @beforeCreate (callback) ->
+      @created_at = new Date
+      callback()
+
+    @beforeSave (callback) ->
+      @compileBody()
+      callback()
+
+    @all: (callback) ->
+      @maxId (err, max_id) =>
+        return callback err if err
+        @getMulti [1..max_id], (err, items) ->
+          return callback err if err
+          callback err, _.compact items
+
+    compileBody: ->
+      @body = marked @body_md, @constructor.MARKED_OPTIONS
+  ```
+
+  ### Controller
+  ```coffee
+  Post = require '../models/post'
+  resource_class = Post
+
+  module.exports =
+  class PostsController extends require './application_controller'
+    @extendsWithProto()
+
+    @beforeFilter 'buildResource', only: ['new', 'create']
+    @beforeFilter 'findResource', only: ['show', 'edit', 'update', 'delete']
+
+    indexAction: ->
+      resource_class.all @handleErrors (err, @collection) =>
+        @render {@collection}
+
+    newAction: ->
+      @render {@resource}
+
+    createAction: ->
+      @resource.save (err) =>
+        if err
+          if @resource.errors.hasAny
+            @res.format
+              json: => @res.status(422).jsonp @resource.exportFor 'api' # unprocessable_entity
+              html: =>
+                @res.flash 'error', @resource.errors.first()
+                @res.redirect "/posts/new"
+          else
+            @next(err)
+        else
+          url = "/posts/#{@resource.id}"
+          @res.format
+            json: => @res.status(201).set('Location', url).jsonp @resource.exportFor 'api' # created
+            html: =>
+              @res.flash 'Item created'
+              @res.redirect url
+
+    showAction: ->
+      @render {@resource}
+
+    editAction: ->
+      @render {@resource}
+
+    updateAction: ->
+      @resource.update @itemParams, (err) =>
+        if err
+          if @resource.errors.hasAny
+            @res.format
+              json: => @res.status(422).jsonp @resource.exportFor 'api' # unprocessable_entity
+              html: =>
+                @res.flash 'error', @resource.errors.first()
+                @res.redirect "/posts/#{@resource.id}/edit"
+          else
+            @next(err)
+        else
+          url = "/posts/#{@resource.id}"
+          @res.format
+            json: => @res.jsonp @resource.exportFor 'api'
+            html: =>
+              @res.flash 'Item updated'
+              @res.redirect url
+
+    buildResource: (callback) ->
+      @resource = resource_class.create @itemParams
+      callback()
+
+    findResource: (callback) ->
+      resource_class.find @req.param('id'), @handleErrors (err, @resource) =>
+        callback()
+
+    allowed_params = [
+      'title'
+      'body_md'
+    ]
+
+    Object.defineProperty @::, 'itemParams', get: ->
+      @params allowed_params...
+  ```

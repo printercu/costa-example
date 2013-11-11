@@ -1,0 +1,8 @@
+mixin post_inputs
+  .form-group
+    label(for = 'post_title') Title
+    input#post_title.form-control(type = 'text', name = 'title', value = resource.title)
+  .form-group
+    label(for = 'post_body_md') Body
+    textarea#post_body_md.form-control(name = 'body_md')!= resource.body_md
+    p.help-block *You can use markdown here

@@ -1,0 +1,12 @@
+extends ../layouts/application
+include ./_form_inputs
+
+block title
+  = resource.title + ' - Edit'
+
+block content
+  h1: block title
+
+  form(action = '/posts/' + resource.id, method = 'post', role = 'form')
+    mixin post_inputs
+    input.btn.btn-primary(type = 'submit', value = 'Save')

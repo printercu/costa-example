@@ -1,0 +1,36 @@
+{
+  "name": "costa-example",
+  "version": "0.1.0",
+  "description": "Costa example app",
+  "main": "costa",
+  "scripts": {
+    "start": "./costa -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:printercu/costa-example.git"
+  },
+  "dependencies": {
+    "coffee_classkit": "*",
+    "flow-coffee": "*",
+    "costa": "*",
+    "lodash": "*",
+    "js-yaml": "*",
+    "redis": "*",
+    "connect-redis": "*",
+    "express-error": "*",
+    "lingo": "*",
+    "jade": "*",
+    "marked": "*",
+    "highlight.js": "*",
+    "bootstrap": "git://github.com/twbs/bootstrap.git#v3.0.2",
+    "nrockets": "git://github.com/printercu/nrockets.git",
+    "grunt": "~0.4",
+    "grunt-contrib-watch": "*",
+    "grunt-contrib-less": ">=0.2.2",
+    "grunt-contrib-compress": "*"
+  },
+  "engines": {
+    "node": "0.10.x"
+  }
+}

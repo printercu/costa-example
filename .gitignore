@@ -1,0 +1,13 @@
+/node_modules
+
+/etc/assets_version
+/public/js
+/public/css
+
+/var/images
+
+/tmp
+
+*.log
+
+!.gitignore

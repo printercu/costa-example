@@ -1,0 +1,13 @@
+---
+id: 2
+title: What's behind
+body_md: |
+  Costa uses [CoffeClasskit](https://github.com/printercu/coffee_classkit) for
+  inheritance. In a nutshell it implements inheritance of class methods using
+  prototype chain. It also inherits properties that were set with
+  `Object.defineProperty`. More about features of classkit you can find in the repo.
+
+  There is a lot of interesting stuff but i have no more time to write about it
+  before NKO4 ends :)
+
+  Thanks for reading!

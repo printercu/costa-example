@@ -1,0 +1,11 @@
+extends ../layouts/application
+
+block title
+  | Posts
+
+block content
+  h1: block title
+
+  - each resource in collection
+    h1: a(href = '/posts/' + resource.id)= resource.title
+    .post!= resource.body

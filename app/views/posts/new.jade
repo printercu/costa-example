@@ -1,0 +1,12 @@
+extends ../layouts/application
+include ./_form_inputs
+
+block title
+  | New post
+
+block content
+  h1: block title
+
+  form(action = '/posts', method = 'post', role = 'form')
+    mixin post_inputs
+    input.btn.btn-primary(type = 'submit', value = 'Create')
